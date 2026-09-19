@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurant Menu & Ordering</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>🍽️ My Restaurant</h1>
+      <p>Fresh food, simple ordering.</p>
+    </div>
+    <div class="top-actions">
+      <button class="nav-btn active" id="customerTab">Customer Menu</button>
+      <button class="nav-btn" id="adminTab">Admin Menu</button>
+      <button class="cart-btn" id="cartBtn">🛒 Cart <span id="cartCount">0</span></button>
+    </div>
+  </header>
+
+  <section id="customerView" class="view">
+    <div class="hero">
+      <div>
+        <h2>What would you like to eat?</h2>
+        <p>Choose your food, add it to your cart, and place your order.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <input id="searchInput" type="search" placeholder="Search food..." />
+      <select id="categoryFilter"><option value="all">All Categories</option></select>
+    </div>
+    <div id="customerGrid" class="menu-grid"></div>
+    <div id="customerEmpty" class="empty hidden">No available food items found.</div>
+  </section>
+
+  <section id="adminView" class="view hidden">
+    <div class="admin-header">
+      <div>
+        <h2>Menu Management</h2>
+        <p>Add, edit, remove, and control availability.</p>
+      </div>
+      <div>
+        <button class="secondary" id="adminLogoutBtn">🚪 Logout</button>
+        <button class="secondary" id="categoryBtn">⚙ Categories</button>
+        <button class="primary" id="addItemBtn">+ Add Food Item</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <input id="adminSearch" type="search" placeholder="Search food..." />
+      <select id="adminCategoryFilter"><option value="all">All Categories</option></select>
+      <select id="availabilityFilter">
+        <option value="all">All Availability</option>
+        <option value="available">Available</option>
+        <option value="unavailable">Unavailable</option>
+      </select>
+    </div>
+    <div id="adminGrid" class="menu-grid"></div>
+  </section>
+
+  <div class="drawer hidden" id="cartDrawer">
+    <div class="drawer-card">
+      <div class="modal-header">
+        <h2>Your Cart</h2>
+        <button class="close" id="closeCart">×</button>
+      </div>
+      <div id="cartItems"></div>
+      <div class="cart-total"><span>Total</span><strong id="cartTotal">₹0.00</strong></div>
+      <button class="primary full" id="checkoutBtn">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="checkoutModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Place Your Order</h2>
+        <button class="close" data-close="checkoutModal">×</button>
+      </div>
+      <form id="checkoutForm">
+        <label>Customer Name
+          <input id="customerName" required placeholder="Your name" />
+        </label>
+        <label>Phone Number
+          <input id="customerPhone" required type="tel" placeholder="10-digit phone number" />
+        </label>
+        <label>Order Type
+          <select id="orderType">
+            <option value="dine-in">Dine-in</option>
+            <option value="takeaway">Takeaway</option>
+          </select>
+        </label>
+        <label>Table Number <span class="optional">(for dine-in)</span>
+          <input id="tableNumber" placeholder="e.g. 12" />
+        </label>
+        <label>Special Instructions
+          <textarea id="orderNotes" placeholder="Less spicy, no onions, etc."></textarea>
+        </label>
+        <div class="checkout-summary" id="checkoutSummary"></div>
+        <div class="form-actions">
+          <button type="button" class="secondary" data-close="checkoutModal">Cancel</button>
+          <button type="submit" class="primary">Place Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="successModal">
+    <div class="modal-card success">
+      <div class="success-icon">✓</div>
+      <h2>Order Placed!</h2>
+      <p id="successText"></p>
+      <button class="primary full" id="continueBtn">Continue Ordering</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="itemModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Food Item</h2>
+        <button class="close" data-close="itemModal">×</button>
+      </div>
+      <form id="itemForm">
+        <input type="hidden" id="itemId" />
+        <label>Food Name <input id="itemName" required maxlength="80" /></label>
+        <label>Category <select id="itemCategory" required></select></label>
+        <label>Price (₹) <input id="itemPrice" required type="number" min="0" step="0.01" /></label>
+        <label>Description <textarea id="itemDescription" maxlength="200"></textarea></label>
+        <label class="switch-row"><span>Available for customers</span><input id="itemAvailable" type="checkbox" checked /></label>
+        <div class="form-actions">
+          <button type="button" class="secondary" data-close="itemModal">Cancel</button>
+          <button type="submit" class="primary">Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="categoryModal">
+    <div class="modal-card small">
+      <div class="modal-header">
+        <h2>Manage Categories</h2>
+        <button class="close" data-close="categoryModal">×</button>
+      </div>
+      <form id="categoryForm" class="category-form">
+        <input id="newCategory" required maxlength="40" placeholder="e.g. Breakfast" />
+        <button class="primary" type="submit">Add</button>
+      </form>
+      <div id="categoryList" class="category-list"></div>
+    </div>
+  </div>
+
+
+  <div class="modal hidden" id="adminLoginModal">
+    <div class="modal-card small">
+      <div class="modal-header">
+        <h2>🔐 Admin Login</h2>
+        <button class="close" data-close="adminLoginModal">×</button>
+      </div>
+      <form id="adminLoginForm">
+        <label>Username
+          <input id="adminUsername" required autocomplete="username" placeholder="Admin username" />
+        </label>
+        <label>Password
+          <input id="adminPassword" type="password" required autocomplete="current-password" placeholder="Admin password" />
+        </label>
+        <p class="login-error hidden" id="adminLoginError"></p>
+        <div class="form-actions">
+          <button type="button" class="secondary" data-close="adminLoginModal">Cancel</button>
+          <button type="submit" class="primary">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
