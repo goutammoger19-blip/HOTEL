@@ -229,8 +229,8 @@ async function adminLogin(e) {
     const data = await api("/admin/login", {
       method:"POST",
       body:JSON.stringify({
-        username:$("adminUsername").value.trim(),
-        password:$("adminPassword").value
+        username:$("Goutam").value.trim(),
+        password:$("2007").value
       })
     });
     adminToken = data.token;
