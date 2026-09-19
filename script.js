@@ -230,7 +230,7 @@ async function adminLogin(e) {
       method:"POST",
       body:JSON.stringify({
         username:$("Goutam").value.trim(),
-        password:$("2007").value
+        password:$("goutam").value
       })
     });
     adminToken = data.token;
